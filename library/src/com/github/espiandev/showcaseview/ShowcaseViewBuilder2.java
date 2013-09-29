@@ -118,7 +118,7 @@ public class ShowcaseViewBuilder2 {
             }
             
             if (mShowcaseView != null) {
-                mSv.setShowcaseView(mSv);
+                mSv.setShowcaseView(mShowcaseView);
             } else if (mShowcaseItemType != -1 && mShowcaseActionItemId != -1) {
                 mSv.setShowcaseItem(mShowcaseItemType, mShowcaseActionItemId, mShowcaseActivity);
             } else if (mShowcaseX != -1 && mShowcaseY != -1) {
@@ -133,5 +133,9 @@ public class ShowcaseViewBuilder2 {
         }
         
         return mSv;        
+    }
+
+    public void show() {
+        build().show();
     }
 }
