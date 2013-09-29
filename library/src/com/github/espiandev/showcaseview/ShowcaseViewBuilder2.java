@@ -1,6 +1,7 @@
 package com.github.espiandev.showcaseview;
 
 import android.app.Activity;
+import android.content.Context;
 import android.view.View;
 import android.widget.RelativeLayout;
 
@@ -11,14 +12,15 @@ public class ShowcaseViewBuilder2 {
     private final ConfigOptions mOptions = new ConfigOptions();
     
     private ShowcaseView mSv = null;
-    
-    private Activity mActivity;
+
+    private Context mContext;
     
     private String mTitle;
     private String mSubtext;
         
     private int mShowcaseItemType = -1;
     private int mShowcaseActionItemId = -1;
+    private Activity mShowcaseActivity;
     
     private View mShowcaseView;
     private float mShowcaseX = -1;
@@ -28,13 +30,13 @@ public class ShowcaseViewBuilder2 {
     
     private int mStyle = -1;
     
-    public ShowcaseViewBuilder2(Activity activity) {
-        mActivity = activity;
+    public ShowcaseViewBuilder2(Context context) {
+        mContext = context;
     }
     
     public ShowcaseViewBuilder2 setText(int titleResId, int subTextResId) {
-        mTitle = mActivity.getString(titleResId);
-        mSubtext = mActivity.getString(subTextResId);
+        mTitle = mContext.getString(titleResId);
+        mSubtext = mContext.getString(subTextResId);
         return this;
     }
     
@@ -94,18 +96,19 @@ public class ShowcaseViewBuilder2 {
         return this;
     }
     
-    public ShowcaseViewBuilder2 setShowcaseItem(int itemType, int itemId) {
+    public ShowcaseViewBuilder2 setShowcaseItem(int itemType, int itemId, Activity activity) {
         mShowcaseItemType = itemType;
         mShowcaseActionItemId = itemId;
+        mShowcaseActivity = activity;
         return this;
     }
     
     public ShowcaseView build() {
         if (mSv == null) {
             if (mStyle != -1) {
-                mSv = new ShowcaseView(mActivity, null, mStyle);
+                mSv = new ShowcaseView(mContext, null, mStyle);
             } else {
-                mSv = new ShowcaseView(mActivity);
+                mSv = new ShowcaseView(mContext);
             }
             
             mSv.setConfigOptions(mOptions);
@@ -117,7 +120,7 @@ public class ShowcaseViewBuilder2 {
             if (mShowcaseView != null) {
                 mSv.setShowcaseView(mSv);
             } else if (mShowcaseItemType != -1 && mShowcaseActionItemId != -1) {
-                mSv.setShowcaseItem(mShowcaseItemType, mShowcaseActionItemId, mActivity);
+                mSv.setShowcaseItem(mShowcaseItemType, mShowcaseActionItemId, mShowcaseActivity);
             } else if (mShowcaseX != -1 && mShowcaseY != -1) {
                 mSv.setShowcasePosition(mShowcaseX, mShowcaseY);
             } else {
