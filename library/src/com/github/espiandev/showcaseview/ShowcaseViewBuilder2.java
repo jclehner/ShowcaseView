@@ -2,6 +2,7 @@ package com.github.espiandev.showcaseview;
 
 import android.app.Activity;
 import android.content.Context;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.RelativeLayout;
 
@@ -27,8 +28,6 @@ public class ShowcaseViewBuilder2 {
     private float mShowcaseY = -1;
     
     private float mIndicatorScale = -1;
-    
-    private int mStyle = -1;
     
     public ShowcaseViewBuilder2(Context context) {
         mContext = context;
@@ -105,11 +104,7 @@ public class ShowcaseViewBuilder2 {
     
     public ShowcaseView build() {
         if (mSv == null) {
-            if (mStyle != -1) {
-                mSv = new ShowcaseView(mContext, null, mStyle);
-            } else {
-                mSv = new ShowcaseView(mContext);
-            }
+            mSv = new ShowcaseView(mContext);
             
             mSv.setConfigOptions(mOptions);
             
