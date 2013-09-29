@@ -844,7 +844,7 @@ public class ShowcaseView extends RelativeLayout implements View.OnClickListener
 
     public static class ConfigOptions {
         public boolean block = true, noButton = false;
-        public int insert = INSERT_TO_DECOR;
+        public int insert = INSERT_TO_SCREEN;
         public boolean hideOnClickOutside = false;
 
         /**
