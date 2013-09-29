@@ -648,7 +648,7 @@ public class ShowcaseView extends RelativeLayout implements View.OnClickListener
         AnimationUtils.createMovementAnimation(mHandy, x, y).start();
     }
 
-    private void setConfigOptions(ConfigOptions options) {
+    /* package */ void setConfigOptions(ConfigOptions options) {
         mOptions = options;
     }
 
