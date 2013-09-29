@@ -9,6 +9,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
+import android.graphics.PixelFormat;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
@@ -27,6 +28,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.RelativeLayout;
 
@@ -47,6 +49,7 @@ public class ShowcaseView extends RelativeLayout implements View.OnClickListener
 
     public static final int INSERT_TO_DECOR = 0;
     public static final int INSERT_TO_VIEW = 1;
+    public static final int INSERT_TO_SCREEN = 2;
 
     public static final int ITEM_ACTION_HOME = 0;
     public static final int ITEM_TITLE = 1;
@@ -188,6 +191,11 @@ public class ShowcaseView extends RelativeLayout implements View.OnClickListener
                 if (mOptions.insert == INSERT_TO_VIEW) {
                     showcaseX = (float) (view.getLeft() + view.getWidth() / 2);
                     showcaseY = (float) (view.getTop() + view.getHeight() / 2);
+                } else if (mOptions.insert == INSERT_TO_SCREEN) {
+                    int[] coordinates = new int[2];
+                    view.getLocationOnScreen(coordinates);
+                    showcaseX = (coordinates[0] + view.getWidth() / 2);
+                    showcaseY = (coordinates[1] + view.getHeight() / 2);
                 } else {
                     int[] coordinates = new int[2];
                     view.getLocationInWindow(coordinates);
@@ -538,6 +546,15 @@ public class ShowcaseView extends RelativeLayout implements View.OnClickListener
         } else {
             setVisibility(View.GONE);
         }
+
+        if (getConfigOptions().insert == INSERT_TO_SCREEN) {
+            WindowManager wm = (WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE);
+            try {
+                wm.removeView(this);
+            } catch(IllegalArgumentException e) {
+                Log.w("ShowcaseView", e);
+            }
+        }
     }
 
     private void fadeOutShowcase() {
@@ -557,6 +574,17 @@ public class ShowcaseView extends RelativeLayout implements View.OnClickListener
             fadeInShowcase();
         } else {
             setVisibility(View.VISIBLE);
+        }
+
+        if (getConfigOptions().insert == INSERT_TO_SCREEN) {
+            WindowManager.LayoutParams lps = new WindowManager.LayoutParams();
+            lps.width = WindowManager.LayoutParams.MATCH_PARENT;
+            lps.height = WindowManager.LayoutParams.MATCH_PARENT;
+            lps.flags = WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN;
+            lps.format = PixelFormat.TRANSLUCENT;
+
+            WindowManager wm = (WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE);
+            wm.addView(this, lps);
         }
     }
 
@@ -675,7 +703,7 @@ public class ShowcaseView extends RelativeLayout implements View.OnClickListener
             sv.setConfigOptions(options);
         if (sv.getConfigOptions().insert == INSERT_TO_DECOR) {
             ((ViewGroup) activity.getWindow().getDecorView()).addView(sv);
-        } else {
+        } else if (sv.getConfigOptions().insert == INSERT_TO_VIEW) {
             ((ViewGroup) activity.findViewById(android.R.id.content)).addView(sv);
         }
         sv.setShowcaseView(viewToShowcase);
@@ -700,7 +728,7 @@ public class ShowcaseView extends RelativeLayout implements View.OnClickListener
             sv.setConfigOptions(options);
         if (sv.getConfigOptions().insert == INSERT_TO_DECOR) {
             ((ViewGroup) activity.getWindow().getDecorView()).addView(sv);
-        } else {
+        } else if (sv.getConfigOptions().insert == INSERT_TO_VIEW) {
             ((ViewGroup) activity.findViewById(android.R.id.content)).addView(sv);
         }
         sv.setShowcaseView(viewToShowcase);
@@ -733,7 +761,7 @@ public class ShowcaseView extends RelativeLayout implements View.OnClickListener
             sv.setConfigOptions(options);
         if (sv.getConfigOptions().insert == INSERT_TO_DECOR) {
             ((ViewGroup) activity.getWindow().getDecorView()).addView(sv);
-        } else {
+        } else if (sv.getConfigOptions().insert == INSERT_TO_VIEW) {
             ((ViewGroup) activity.findViewById(android.R.id.content)).addView(sv);
         }
         sv.setShowcasePosition(x, y);
@@ -748,7 +776,7 @@ public class ShowcaseView extends RelativeLayout implements View.OnClickListener
             sv.setConfigOptions(options);
         if (sv.getConfigOptions().insert == INSERT_TO_DECOR) {
             ((ViewGroup) activity.getWindow().getDecorView()).addView(sv);
-        } else {
+        } else if (sv.getConfigOptions().insert == INSERT_TO_VIEW) {
             ((ViewGroup) activity.findViewById(android.R.id.content)).addView(sv);
         }
         sv.setShowcasePosition(x, y);
@@ -777,7 +805,7 @@ public class ShowcaseView extends RelativeLayout implements View.OnClickListener
             sv.setConfigOptions(options);
         if (sv.getConfigOptions().insert == INSERT_TO_DECOR) {
             ((ViewGroup) activity.getWindow().getDecorView()).addView(sv);
-        } else {
+        } else if (sv.getConfigOptions().insert == INSERT_TO_VIEW) {
             ((ViewGroup) activity.findViewById(android.R.id.content)).addView(sv);
         }
         sv.setShowcaseItem(type, itemId, activity);
@@ -802,7 +830,7 @@ public class ShowcaseView extends RelativeLayout implements View.OnClickListener
             sv.setConfigOptions(options);
         if (sv.getConfigOptions().insert == INSERT_TO_DECOR) {
             ((ViewGroup) activity.getWindow().getDecorView()).addView(sv);
-        } else {
+        } else if (sv.getConfigOptions().insert == INSERT_TO_VIEW) {
             ((ViewGroup) activity.findViewById(android.R.id.content)).addView(sv);
         }
         sv.setShowcaseItem(type, itemId, activity);
