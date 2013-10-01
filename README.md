@@ -1,3 +1,9 @@
+# A WORD OF CAUTION
+
+This fork of ShowcaseView has been adapted specifically for use in my [RxDroid](http://code.google.com/p/rxdroid/) app. Parts of the
+original functionality are likely not to work as expected. 
+
+
 Showcase View library  
 ====
   
