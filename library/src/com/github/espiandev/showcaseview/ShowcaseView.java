@@ -1,5 +1,10 @@
 package com.github.espiandev.showcaseview;
 
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -33,11 +38,8 @@ import android.widget.Button;
 import android.widget.RelativeLayout;
 
 import com.github.espiandev.showcaseview.anim.AnimationUtils;
-
-import java.lang.reflect.Field;
-
-import static com.github.espiandev.showcaseview.anim.AnimationUtils.AnimationEndListener;
-import static com.github.espiandev.showcaseview.anim.AnimationUtils.AnimationStartListener;
+import com.github.espiandev.showcaseview.anim.AnimationUtils.AnimationEndListener;
+import com.github.espiandev.showcaseview.anim.AnimationUtils.AnimationStartListener;
 
 /**
  * A view which allows you to showcase areas of your app with an explanation.
@@ -83,6 +85,8 @@ public class ShowcaseView extends RelativeLayout implements View.OnClickListener
     private float[] mBestTextPosition;
     private boolean mAlteredText = false;
     private TextAppearanceSpan mDetailSpan, mTitleSpan;
+
+    private ArrayList<OnShowcaseEventListener> mEventListeners = new ArrayList<OnShowcaseEventListener>();
 
     private final String buttonText;
     private float scaleMultiplier = 1f;
@@ -189,8 +193,8 @@ public class ShowcaseView extends RelativeLayout implements View.OnClickListener
             public void run() {
                 init();
                 if (mOptions.insert == INSERT_TO_VIEW) {
-                    showcaseX = (float) (view.getLeft() + view.getWidth() / 2);
-                    showcaseY = (float) (view.getTop() + view.getHeight() / 2);
+                    showcaseX = (view.getLeft() + view.getWidth() / 2);
+                    showcaseY = (view.getTop() + view.getHeight() / 2);
                 } else if (mOptions.insert == INSERT_TO_SCREEN) {
                     int[] coordinates = new int[2];
                     view.getLocationOnScreen(coordinates);
@@ -199,12 +203,20 @@ public class ShowcaseView extends RelativeLayout implements View.OnClickListener
                 } else {
                     int[] coordinates = new int[2];
                     view.getLocationInWindow(coordinates);
-                    showcaseX = (float) (coordinates[0] + view.getWidth() / 2);
-                    showcaseY = (float) (coordinates[1] + view.getHeight() / 2);
+                    showcaseX = (coordinates[0] + view.getWidth() / 2);
+                    showcaseY = (coordinates[1] + view.getHeight() / 2);
                 }
                 invalidate();
             }
         });
+    }
+
+    /* package */ float getShowcaseX() {
+        return showcaseX;
+    }
+
+    /* package */ float getShowcaseY() {
+        return showcaseY;
     }
 
     /**
@@ -395,6 +407,14 @@ public class ShowcaseView extends RelativeLayout implements View.OnClickListener
         mEventListener = listener;
     }
 
+    public void addOnShowcaseEventListener(OnShowcaseEventListener listener) {
+        mEventListeners.add(listener);
+    }
+
+    public void removeOnShowcaseEventListener(OnShowcaseEventListener listener) {
+        mEventListeners.remove(listener);
+    }
+
     @Override
     protected void dispatchDraw(Canvas canvas) {
         if (showcaseX < 0 || showcaseY < 0 || isRedundant) {
@@ -504,15 +524,24 @@ public class ShowcaseView extends RelativeLayout implements View.OnClickListener
 
     }
 
-    public void animateGesture(float offsetStartX, float offsetStartY, float offsetEndX, float offsetEndY) {
+    public void animateGesture(final float offsetStartX, final float offsetStartY, final float offsetEndX, final float offsetEndY) {
         mHandy = ((LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.handy, null);
-        addView(mHandy);
-        moveHand(offsetStartX, offsetStartY, offsetEndX, offsetEndY, new AnimationEndListener() {
-            @Override
-            public void onAnimationEnd() {
-                removeView(mHandy);
-            }
-        });
+        post(new Runnable() {
+
+			@Override
+			public void run()
+			{
+				 addView(mHandy);
+			        moveHand(offsetStartX, offsetStartY, offsetEndX, offsetEndY, new AnimationEndListener() {
+			            @Override
+			            public void onAnimationEnd() {
+			                removeView(mHandy);
+			            }
+			        });
+
+			}
+		});
+
     }
 
     private void moveHand(float offsetStartX, float offsetStartY, float offsetEndX, float offsetEndY, AnimationEndListener listener) {
@@ -539,6 +568,10 @@ public class ShowcaseView extends RelativeLayout implements View.OnClickListener
     public void hide() {
         if (mEventListener != null) {
             mEventListener.onShowcaseViewHide(this);
+        }
+
+        for (OnShowcaseEventListener l : mEventListeners) {
+            l.onShowcaseViewHide(this);
         }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB && getConfigOptions().fadeOutDuration > 0) {
@@ -570,6 +603,11 @@ public class ShowcaseView extends RelativeLayout implements View.OnClickListener
         if (mEventListener != null) {
             mEventListener.onShowcaseViewShow(this);
         }
+
+        for (OnShowcaseEventListener l : mEventListeners) {
+            l.onShowcaseViewShow(this);
+        }
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB && getConfigOptions().fadeInDuration > 0) {
             fadeInShowcase();
         } else {
@@ -856,7 +894,7 @@ public class ShowcaseView extends RelativeLayout implements View.OnClickListener
          * If you want to use more than one Showcase with {@link ShowcaseView#TYPE_ONE_SHOT} in one Activity, set a unique {@link ConfigOptions#showcaseId} value for every different Showcase you want to use.
          */
         public int shotType = TYPE_NO_LIMIT;
-        
+
         /**
          * Default duration for fade in animation. Set to 0 to disable.
          */
