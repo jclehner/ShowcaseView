@@ -485,7 +485,7 @@ public class ShowcaseView extends RelativeLayout implements View.OnClickListener
      *
      * @param canvasW width of the screen
      * @param canvasH height of the screen
-     * @return
+     * @return [x, y, width]
      */
     private float[] getBestTextPosition(int canvasW, int canvasH) {
 
@@ -496,7 +496,7 @@ public class ShowcaseView extends RelativeLayout implements View.OnClickListener
         //float spaceRight = canvasW - voidedArea.right;
 
         //TODO: currently only considers above or below showcase, deal with left or right
-        return new float[]{24 * metricScale, spaceTop > spaceBottom ? 128 * metricScale : 24 * metricScale + voidedArea.bottom, canvasW - 48 * metricScale};
+        return new float[]{24 * metricScale, spaceTop > spaceBottom ? 128 * metricScale : /*24 * metricScale +*/ voidedArea.bottom, canvasW - 48 * metricScale};
 
     }
 
