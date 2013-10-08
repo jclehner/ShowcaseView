@@ -219,6 +219,10 @@ public class ShowcaseView extends RelativeLayout implements View.OnClickListener
         return showcaseY;
     }
 
+    /* package */ boolean isRedundant() {
+        return isRedundant;
+    }
+
     /**
      * Set a specific position to showcase
      *

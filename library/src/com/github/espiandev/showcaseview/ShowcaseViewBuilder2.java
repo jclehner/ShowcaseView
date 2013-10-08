@@ -212,6 +212,10 @@ public class ShowcaseViewBuilder2 {
 
                             @Override
                             public void run() {
+                                if (showcaseView.isRedundant()) {
+                                    return;
+                                }
+
                                 if (!mAnimIsRelative) {
                                     showcaseView.animateGesture(mAnimStartX, mAnimStartY, mAnimEndX, mAnimEndY);
                                 } else {
