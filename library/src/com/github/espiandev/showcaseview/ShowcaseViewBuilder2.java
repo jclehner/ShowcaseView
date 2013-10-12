@@ -143,6 +143,10 @@ public class ShowcaseViewBuilder2 {
     }
 
     public ShowcaseView build() {
+        return build(true);
+    }
+
+    public ShowcaseView build(boolean buildRedundantView) {
         if (mSv == null) {
             mSv = new ShowcaseView(mContext);
 
@@ -239,6 +243,10 @@ public class ShowcaseViewBuilder2 {
             if (mListener != null) {
                 mSv.addOnShowcaseEventListener(mListener);
             }
+        }
+
+        if (!buildRedundantView && mSv.isRedundant()) {
+            return null;
         }
 
         return mSv;

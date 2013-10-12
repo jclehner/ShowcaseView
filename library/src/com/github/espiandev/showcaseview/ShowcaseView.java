@@ -604,6 +604,14 @@ public class ShowcaseView extends RelativeLayout implements View.OnClickListener
     }
 
     public void show() {
+        show(true);
+    }
+
+    public void show(boolean showRedundant) {
+        if (isRedundant && !showRedundant) {
+            return;
+        }
+
         if (mEventListener != null) {
             mEventListener.onShowcaseViewShow(this);
         }
